@@ -21,6 +21,9 @@ public:
 	IocpCore();
 	~IocpCore();
 
+	bool		Register(IocpObjectRef iocpObject);
+	bool		Dispatch(uint32 timeoutMs = INFINITE);
+
 private:
 	HANDLE		_iocpHandle;
 };

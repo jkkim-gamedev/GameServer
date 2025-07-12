@@ -1,6 +1,7 @@
 #pragma once
 #include "IocpCore.h"
 #include "IocpEvent.h"
+#include "NetAddress.h"
 #include "RecvBuffer.h"
 
 class Service;
@@ -11,6 +12,7 @@ class Service;
 
 class Session : public IocpObject
 {
+	friend class Listener;
 	friend class Service;
 
 	enum
@@ -27,8 +29,12 @@ public:
 	shared_ptr<Service>	GetService() { return _service.lock(); }
 	void				Disconnect(const WCHAR* cause);
 
+	void				SetService(shared_ptr<Service> service) { _service = service; }
+
 public:
 	/* 정보 관련 */
+	void				SetNetAddress(NetAddress address) { _netAddress = address; }
+	SOCKET				GetSocket() { return _socket; }
 	bool				IsConnected() { return _connected; }
 	SessionRef			GetSessionRef() { return static_pointer_cast<Session>(shared_from_this()); }
 
@@ -60,6 +66,7 @@ protected:
 private:
 	weak_ptr<Service>	_service;
 	SOCKET				_socket = INVALID_SOCKET;
+	NetAddress			_netAddress = {};
 	Atomic<bool>		_connected = false;
 
 private:

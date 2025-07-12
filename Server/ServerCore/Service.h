@@ -21,8 +21,17 @@ public:
 	Service(ServiceType type, NetAddress address, IocpCoreRef core, SessionFactory factory, int32 maxSessionCount = 1);
 	virtual ~Service();
 
+	virtual bool		Start() abstract;
+	bool				CanStart() { return _sessionFactory != nullptr; }
+
+	SessionRef			CreateSession();
 	void				AddSession(SessionRef session);
 	void				ReleaseSession(SessionRef session);
+	int32				GetMaxSessionCount() { return _maxSessionCount; }
+
+public:
+	NetAddress			GetNetAddress() { return _netAddress; }
+	IocpCoreRef&		GetIocpCore() { return _iocpCore; }
 
 protected:
 	USE_LOCK;
@@ -45,4 +54,9 @@ class ServerService : public Service
 public:
 	ServerService(NetAddress targetAddress, IocpCoreRef core, SessionFactory factory, int32 maxSessionCount = 1);
 	virtual ~ServerService() {}
+
+	virtual bool	Start() override;
+
+private:
+	ListenerRef		_listener = nullptr;
 };

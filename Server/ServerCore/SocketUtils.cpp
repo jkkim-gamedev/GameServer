@@ -34,6 +34,35 @@ SOCKET SocketUtils::CreateSocket()
 	return ::WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
 }
 
+bool SocketUtils::SetLinger(SOCKET socket, uint16 onoff, uint16 linger)
+{
+	LINGER option;
+	option.l_onoff = onoff;
+	option.l_linger = linger;
+	return SetSockOpt(socket, SOL_SOCKET, SO_LINGER, option);
+}
+
+bool SocketUtils::SetReuseAddress(SOCKET socket, bool flag)
+{
+	return SetSockOpt(socket, SOL_SOCKET, SO_REUSEADDR, flag);
+}
+
+// ListenSocket의 특성을 ClientSocket에 그대로 적용
+bool SocketUtils::SetUpdateAcceptSocket(SOCKET socket, SOCKET listenSocket)
+{
+	return SetSockOpt(socket, SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT, listenSocket);
+}
+
+bool SocketUtils::Bind(SOCKET socket, NetAddress netAddr)
+{
+	return SOCKET_ERROR != ::bind(socket, reinterpret_cast<const SOCKADDR*>(&netAddr.GetSockAddr()), sizeof(SOCKADDR_IN));
+}
+
+bool SocketUtils::Listen(SOCKET socket, int32 backlog)
+{
+	return SOCKET_ERROR != ::listen(socket, backlog);
+}
+
 void SocketUtils::Close(SOCKET& socket)
 {
 	if (socket != INVALID_SOCKET)

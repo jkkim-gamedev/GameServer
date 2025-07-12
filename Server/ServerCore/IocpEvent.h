@@ -46,6 +46,19 @@ public:
 };
 
 /*----------------
+	AcceptEvent
+-----------------*/
+
+class AcceptEvent : public IocpEvent
+{
+public:
+	AcceptEvent() : IocpEvent(EventType::Accept) {}
+
+public:
+	SessionRef	session = nullptr;
+};
+
+/*----------------
 	RecvEvent
 -----------------*/
 
